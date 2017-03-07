@@ -1,0 +1,252 @@
+/*Построить три класса (базовый и 2 потомка), описывающих некоторых работников с
+почасовой оплатой (один из потомков) и фиксированной оплатой (второй потомок).
+Написать методы для расчета заработной платы.
+Для "повременщиков" формула для расчета следующая: почасовая ставка * 8 * 22
+Реализовать следующий функционал:
+- добавление, редактирование, удаление работников
+- вывод работников
+- повышение зарплаты в процентах
+
+Есть абстрактный класс Worker. В этом классе есть чисто виртуальный метод calculateSalary (расчет зарплаты)
+От этого класса наследуются классы FixedWorker (работник с фиксированной оплатой) и HourlyWorker (с почасовой оплатой).
+В этих классах переопределяется метод calculateSalary
+Для "повременщиков" формула для расчета следующая: почасовая ставка * 8 * 22
+Реализовать следующий функционал:
+- добавление, редактирование, удаление работников
+- вывод работников
+- повышение зарплаты в процентах
+*/
+
+#include <iostream>
+#include <string>
+using namespace std;
+
+class Worker
+{
+public:
+
+	Worker()
+	{
+		name = "Unknown";
+		age = 0;
+		status = 0;
+	}
+
+	Worker(string name, int age,  int status)
+	{
+		this->name = name;
+		this->age = age;
+		this->status = status;
+	}
+
+	virtual void calculateSalary() = 0;
+
+	void setWorkerName(string n)
+	{
+		name = n;
+	}
+
+	string getWorkerName()
+	{
+		return name;
+	}
+
+	void setWorkerAge(int a)
+	{
+		if(a <= 18)
+		{
+			a = 18;
+		}
+		else if(a >= 60)
+		{
+			a = 60;
+		}
+		age = a;
+	}
+
+	int getWorkerAge()
+	{
+		return age;
+	}
+
+	void setWorkerStatus(int st)
+	{
+		status = st;
+	}
+
+	double getWorkerStatus()
+	{
+		return status;
+	}
+
+	void showWorkerInfo() 
+	{
+		cout<<name<<" "<<age<<" "<<status<<endl;
+	}
+
+private:
+	string name;
+	int age;
+	int status;
+};
+
+class HourlyWorker : public Worker
+{
+public:
+	HourlyWorker(string name, int age, int status, double rate) :
+	  Worker(name, age, status)
+	  {
+		  this->rate = rate;
+	  }
+
+	  void setRate(double rate)
+	  {
+		  this->rate = rate;
+	  }
+
+	  double getRate()
+	  {
+		  return rate;
+	  }
+
+	  double getSalary()
+	  {
+		  double salary = rate * 8 * 22;
+		  return salary;
+	  }
+
+	  void calculateSalary()
+	  {
+		  cout<<rate * 8 *22<<endl;;
+	  }
+
+	  void showHourlyWorkerInfo()
+	  {
+		  showWorkerInfo();
+		  cout<<"Почасовая ставка: "<<rate<<endl
+			  <<"Зарплата: "<<getSalary()<<"\n\n";
+	  }
+
+private:
+	double rate;
+};
+
+class FixedWorker : public Worker
+{
+public:
+	FixedWorker(string name, int age, int status, double salary) :
+	  Worker(name, age, status)
+	  {
+		  this->salary = salary;
+	  }
+
+	  void setSalary(double salary)
+	  {
+		  this->salary = salary;
+	  }
+
+	  double getSalary()
+	  {
+		  return salary;
+	  }
+
+	  void calculateSalary()
+	  {
+		  cout<<salary<<endl;;
+	  }
+
+	  void showFixedWorkerInfo()
+	  {
+		  showWorkerInfo();
+		  cout<<"Зарплата: "<<salary<<"\n\n";
+	  }
+
+private:
+	double salary;
+};
+
+class Database
+{
+public:
+	Database()
+	{
+		nextIndex = 0;
+	}
+
+	void addWorker(Worker* w)
+	{
+		data[nextIndex] = w;
+		nextIndex++;
+	}
+
+	void editWorker(int nextIndex)
+	{	
+
+		string nameValue;
+		int ageValue;
+		double salaryValue;
+		int statusValue;
+
+		cout<<"Enter name ";
+		cin>>nameValue;
+		data[nextIndex]->setWorkerName(nameValue);
+
+		cout<<"Enter age ";
+		cin>>ageValue;
+		data[nextIndex]->setWorkerAge(ageValue);
+
+		cout<<"Enter status ";
+		cin>>statusValue;
+		data[nextIndex]->setWorkerStatus(statusValue);
+
+		cout<<"Enter salary";
+		cin>>salaryValue;
+		data[nextIndex]->calculateSalary();
+
+	}
+
+	void deleteWorker(int nextIndex)
+	{
+		int statusValue;
+
+		statusValue = 0;
+		data[nextIndex]->setWorkerStatus(statusValue);
+	}
+
+	void showAll()
+	{
+		for(int i = 0; i < nextIndex; i++)
+		{
+			data[i]->showWorkerInfo();
+			data[i]->calculateSalary();
+		}
+	}
+
+
+private: 
+	Worker* data[20];
+	int nextIndex;
+};
+
+void main()
+{
+	setlocale(0, "rus");	 
+
+	Database db;
+
+	db.addWorker(new HourlyWorker("Kesha", 25, 1, 15));
+	db.addWorker(new HourlyWorker("Chubasik", 29, 1, 20));
+	db.addWorker(new FixedWorker("Basi4", 18, 1, 2000));
+
+	db.showAll();
+
+	db.editWorker(0);
+
+	db.deleteWorker(2);
+
+	db.showAll();
+
+
+
+
+}
